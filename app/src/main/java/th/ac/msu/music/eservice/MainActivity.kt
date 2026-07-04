@@ -9,6 +9,8 @@ import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import android.widget.FrameLayout
+import android.view.ViewGroup
 
 class MainActivity : AppCompatActivity() {
 
@@ -35,11 +37,18 @@ class MainActivity : AppCompatActivity() {
             }
         }
         
-        // Set WebView as the content view
-        setContentView(webView)
+        // Create a FrameLayout to wrap the WebView and enforce safe area insets
+        val container = FrameLayout(this)
+        container.addView(webView, FrameLayout.LayoutParams(
+            ViewGroup.LayoutParams.MATCH_PARENT,
+            ViewGroup.LayoutParams.MATCH_PARENT
+        ))
+
+        // Set the FrameLayout as the content view instead of the WebView directly
+        setContentView(container)
 
         // Handle Edge-to-Edge display in modern Android to prevent UI from hiding under system bars
-        ViewCompat.setOnApplyWindowInsetsListener(webView) { view, windowInsets ->
+        ViewCompat.setOnApplyWindowInsetsListener(container) { view, windowInsets ->
             val insets = windowInsets.getInsets(WindowInsetsCompat.Type.systemBars())
             view.setPadding(insets.left, insets.top, insets.right, insets.bottom)
             windowInsets
