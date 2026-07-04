@@ -22,6 +22,14 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
             Log.d(TAG, "Message Notification Body: ${it.body}")
             sendNotification(it.title ?: "MSU Music+", it.body ?: "")
         }
+
+        // Check if message contains a data payload.
+        if (remoteMessage.data.isNotEmpty()) {
+            Log.d(TAG, "Message data payload: ${remoteMessage.data}")
+            val title = remoteMessage.data["title"] ?: "MSU Music+"
+            val body = remoteMessage.data["body"] ?: ""
+            sendNotification(title, body)
+        }
     }
 
     override fun onNewToken(token: String) {
