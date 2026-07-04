@@ -12,10 +12,36 @@ import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowCompat
 import android.widget.FrameLayout
 import android.view.ViewGroup
+import android.Manifest
+import android.content.pm.PackageManager
+import android.os.Build
+import android.util.Log
+import android.webkit.JavascriptInterface
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.core.content.ContextCompat
+import com.google.firebase.messaging.FirebaseMessaging
 
 class MainActivity : AppCompatActivity() {
 
     private lateinit var webView: WebView
+    private var fcmToken = ""
+
+    // Javascript Interface to pass token to PHP web app
+    inner class WebAppInterface {
+        @JavascriptInterface
+        fun getFcmToken(): String {
+            return fcmToken
+        }
+    }
+
+    // Permission launcher for Android 13+
+    private val requestPermissionLauncher = registerForActivityResult(
+        ActivityResultContracts.RequestPermission()
+    ) { isGranted: Boolean ->
+        if (isGranted) {
+            Log.d("MainActivity", "Notification permission granted")
+        }
+    }
 
     @SuppressLint("SetJavaScriptEnabled")
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -36,6 +62,9 @@ class MainActivity : AppCompatActivity() {
                     return false
                 }
             }
+            
+            // Add Javascript interface
+            addJavascriptInterface(WebAppInterface(), "AndroidApp")
         }
         
         // Create a FrameLayout to wrap the WebView and enforce safe area insets
@@ -75,5 +104,29 @@ class MainActivity : AppCompatActivity() {
                 }
             }
         })
+        
+        // Setup Firebase
+        askNotificationPermission()
+        fetchFcmToken()
+    }
+
+    private fun fetchFcmToken() {
+        FirebaseMessaging.getInstance().token.addOnCompleteListener { task ->
+            if (!task.isSuccessful) {
+                Log.w("MainActivity", "Fetching FCM registration token failed", task.exception)
+                return@addOnCompleteListener
+            }
+            fcmToken = task.result
+            Log.d("MainActivity", "FCM Token: $fcmToken")
+        }
+    }
+
+    private fun askNotificationPermission() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            if (ContextCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS) !=
+                PackageManager.PERMISSION_GRANTED) {
+                requestPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
+            }
+        }
     }
 }
