@@ -7,6 +7,8 @@ import android.webkit.WebView
 import android.webkit.WebViewClient
 import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
 
 class MainActivity : AppCompatActivity() {
 
@@ -35,6 +37,13 @@ class MainActivity : AppCompatActivity() {
         
         // Set WebView as the content view
         setContentView(webView)
+
+        // Handle Edge-to-Edge display in modern Android to prevent UI from hiding under system bars
+        ViewCompat.setOnApplyWindowInsetsListener(webView) { view, windowInsets ->
+            val insets = windowInsets.getInsets(WindowInsetsCompat.Type.systemBars())
+            view.setPadding(insets.left, insets.top, insets.right, insets.bottom)
+            windowInsets
+        }
 
         // Load the target URL
         webView.loadUrl("https://music.msu.ac.th/e-service/")
