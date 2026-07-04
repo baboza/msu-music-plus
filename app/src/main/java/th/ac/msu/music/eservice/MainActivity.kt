@@ -9,6 +9,7 @@ import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.WindowCompat
 import android.widget.FrameLayout
 import android.view.ViewGroup
 
@@ -39,7 +40,7 @@ class MainActivity : AppCompatActivity() {
         
         // Create a FrameLayout to wrap the WebView and enforce safe area insets
         val container = FrameLayout(this)
-        container.setBackgroundColor(android.graphics.Color.parseColor("#4A148C")) // Purple background for safe area
+        container.setBackgroundColor(android.graphics.Color.WHITE) // White background for safe area
         container.addView(webView, FrameLayout.LayoutParams(
             ViewGroup.LayoutParams.MATCH_PARENT,
             ViewGroup.LayoutParams.MATCH_PARENT
@@ -47,6 +48,11 @@ class MainActivity : AppCompatActivity() {
 
         // Set the FrameLayout as the content view instead of the WebView directly
         setContentView(container)
+
+        // Make system bar icons dark since background is white
+        val windowInsetsController = WindowCompat.getInsetsController(window, window.decorView)
+        windowInsetsController.isAppearanceLightStatusBars = true
+        windowInsetsController.isAppearanceLightNavigationBars = true
 
         // Handle Edge-to-Edge display in modern Android to prevent UI from hiding under system bars
         ViewCompat.setOnApplyWindowInsetsListener(container) { view, windowInsets ->
