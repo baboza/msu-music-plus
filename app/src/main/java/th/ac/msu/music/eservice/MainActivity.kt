@@ -39,6 +39,7 @@ class MainActivity : AppCompatActivity() {
         
         // Create a FrameLayout to wrap the WebView and enforce safe area insets
         val container = FrameLayout(this)
+        container.setBackgroundColor(android.graphics.Color.parseColor("#4A148C")) // Purple background for safe area
         container.addView(webView, FrameLayout.LayoutParams(
             ViewGroup.LayoutParams.MATCH_PARENT,
             ViewGroup.LayoutParams.MATCH_PARENT
