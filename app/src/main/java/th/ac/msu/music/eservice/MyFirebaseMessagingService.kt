@@ -28,7 +28,8 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
             Log.d(TAG, "Message data payload: ${remoteMessage.data}")
             val title = remoteMessage.data["title"] ?: "MSU Music+"
             val body = remoteMessage.data["body"] ?: ""
-            sendNotification(title, body)
+            val link = remoteMessage.data["link"]
+            sendNotification(title, body, link)
         }
     }
 
@@ -36,19 +37,24 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
         Log.d(TAG, "Refreshed token: $token")
     }
 
-    private fun sendNotification(title: String, messageBody: String) {
+    private fun sendNotification(title: String, messageBody: String, linkUrl: String? = null) {
         val intent = Intent(this, MainActivity::class.java)
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
+        
+        if (!linkUrl.isNullOrEmpty()) {
+            intent.putExtra("target_url", linkUrl)
+        }
+        
         val pendingIntent = PendingIntent.getActivity(
             this, 0, intent,
-            PendingIntent.FLAG_IMMUTABLE
+            PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
         )
 
         val channelId = "fcm_high_priority_channel"
         val defaultSoundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION)
         
         val notificationBuilder = NotificationCompat.Builder(this, channelId)
-            .setSmallIcon(R.mipmap.ic_launcher) // Use app icon
+            .setSmallIcon(R.drawable.ic_notification) // Use monochrome icon
             .setContentTitle(title)
             .setContentText(messageBody)
             .setAutoCancel(true)

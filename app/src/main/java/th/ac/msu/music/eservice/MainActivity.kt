@@ -91,7 +91,7 @@ class MainActivity : AppCompatActivity() {
         }
 
         // Load the target URL
-        webView.loadUrl("https://music.msu.ac.th/e-service/")
+        handleIntent(intent)
 
         // Handle the physical back button
         onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
@@ -108,6 +108,23 @@ class MainActivity : AppCompatActivity() {
         // Setup Firebase
         askNotificationPermission()
         fetchFcmToken()
+    }
+
+    override fun onNewIntent(intent: android.content.Intent?) {
+        super.onNewIntent(intent)
+        setIntent(intent)
+        if (intent != null) {
+            handleIntent(intent)
+        }
+    }
+
+    private fun handleIntent(intent: android.content.Intent) {
+        val targetUrl = intent.getStringExtra("target_url")
+        if (!targetUrl.isNullOrEmpty()) {
+            webView.loadUrl(targetUrl)
+        } else {
+            webView.loadUrl("https://music.msu.ac.th/e-service/")
+        }
     }
 
     private fun fetchFcmToken() {
