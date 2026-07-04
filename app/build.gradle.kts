@@ -5,14 +5,14 @@ plugins {
 
 android {
     namespace = "th.ac.msu.music.eservice"
-    compileSdk = 34
+    compileSdk = 35
 
     defaultConfig {
         applicationId = "th.ac.msu.music.eservice"
         minSdk = 24
-        targetSdk = 34
-        versionCode = 1
-        versionName = "1.0.0"
+        targetSdk = 35
+        versionCode = 2
+        versionName = "1.0.1"
     }
 
     buildTypes {
