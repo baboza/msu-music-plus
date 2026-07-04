@@ -22,6 +22,9 @@ class MainActivity : AppCompatActivity() {
             settings.domStorageEnabled = true
             settings.setSupportZoom(false)
             
+            // Bypass Google OAuth "disallowed_useragent" (Error 403) by faking standard browser User-Agent
+            settings.userAgentString = settings.userAgentString.replace("; wv", "")
+            
             // Ensure links open within the WebView instead of external browser
             webViewClient = object : WebViewClient() {
                 override fun shouldOverrideUrlLoading(view: WebView?, request: WebResourceRequest?): Boolean {
